@@ -43,16 +43,37 @@ def precipitation():
 @app.route("/api/v1.0/stations")
 def stations():
     session = Session(engine)
-    results = session.query(Station.station, Station.name).all()
+    results = session.query(Station.name).all()
     session.close()
 
-    list_stations = []
-    for station, name in results:
-        station_dict = {}
-        station_dict["station"] = station
-        station_dict["name"] = name 
+    list_stations = list(np.ravel(results))
     return jsonify(list_stations)
+
+
+@app.route("/api/v1.0/<start>")
+def start_date(start):
+    session = Session(engine)
+    result = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(func.strftime('%Y-%m-%d', Measurement.date) >=start).group_by(Measurement.date).all()
+
+    session.close()
+
+    temp = list(np.ravel(result))
+    return jsonify(temp)
+
+@app.route("/api/v1.0/<start>/<end>")
+def start_end(start, end):
+    session = Session(engine)
+    result = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(func.strftime('%Y-%m-%d', Measurement.date) >= start).filter(func.strftime('%Y-%m-%d', Measurement.date) <= end).group_by(Measurement.date).all()
+    session.close()
+
+    temp = list(np.ravel(result))
+    return jsonify(temp)
+
 
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+

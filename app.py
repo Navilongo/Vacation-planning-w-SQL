@@ -63,7 +63,7 @@ def tobs ():
 @app.route("/api/v1.0/<start>")
 def start_date(start):
     session = Session(engine)
-    result = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(func.strftime('%Y-%m-%d', Measurement.date) >=start).group_by(Measurement.date).all()
+    result = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(func.strftime('%Y-%m-%d', Measurement.date) >=start).order_by(Measurement.date).all()
 
     session.close()
 
@@ -73,7 +73,7 @@ def start_date(start):
 @app.route("/api/v1.0/<start>/<end>")
 def start_end(start, end):
     session = Session(engine)
-    result = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(func.strftime('%Y-%m-%d', Measurement.date) >= start).filter(func.strftime('%Y-%m-%d', Measurement.date) <= end).group_by(Measurement.date).all()
+    result = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(func.strftime('%Y-%m-%d', Measurement.date) >= start).filter(func.strftime('%Y-%m-%d', Measurement.date) <= end).order_by(Measurement.date).all()
     session.close()
 
     temp = list(np.ravel(result))

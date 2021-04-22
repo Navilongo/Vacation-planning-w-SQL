@@ -49,6 +49,16 @@ def stations():
     list_stations = list(np.ravel(results))
     return jsonify(list_stations)
 
+@app.route("/api/v1.0/tobs")
+def tobs ():
+    session = Session(engine)
+    results = session.query(Measurement.tobs).filter(func.strftime('%Y-%m-%d', Measurement.date) >= "2016-08-23").filter(Measurement.station=='USC00519281').all()
+    session.close()
+    
+    list_tobs = list(np.ravel(results))
+    return jsonify(list_tobs)
+
+
 
 @app.route("/api/v1.0/<start>")
 def start_date(start):
